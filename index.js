@@ -12,34 +12,20 @@ function retrieveEntries() {
 
 function displayEntries() {
     const entries = retrieveEntries();
+    const tableBody = document.querySelector("#entriesTable tbody");
+    tableBody.innerHTML = "";
 
-    const tableEntries = entries.map((entry) => {
-        const nameCell = `<td class='px-4 py-2'>${entry.name}</td>`;
-        const emailCell = `<td class='px-4 py-2'>${entry.email}</td>`;
-        const passwordCell = `<td class='px-4 py-2'>${entry.password}</td>`;
-        const dobCell = `<td class='px-4 py-2'>${entry.dob}</td>`;
-        const acceptTermsCell = `<td class='px-4 py-2'>${entry.acceptTerms ? "Yes" : "No"}</td>`;
-        const row = `<tr>${nameCell}${emailCell}${passwordCell}${dobCell}${acceptTermsCell}</tr>`;
-        return row;
-    }).join("\n");
-
-    const table = `
-        <table class="table-auto w-full border border-gray-300 mt-4">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="px-4 py-2">Name</th>
-                    <th class="px-4 py-2">Email</th>
-                    <th class="px-4 py-2">Password</th>
-                    <th class="px-4 py-2">DOB</th>
-                    <th class="px-4 py-2">Accepted Terms?</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${tableEntries}
-            </tbody>
-        </table>`;
-
-    document.getElementById("user-entries").innerHTML = table;
+    entries.forEach((entry) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class='px-4 py-2'>${entry.name}</td>
+          <td class='px-4 py-2'>${entry.email}</td>
+          <td class='px-4 py-2'>${entry.password}</td>
+          <td class='px-4 py-2'>${entry.dob}</td>
+          <td class='px-4 py-2'>${entry.acceptTerms ? "Yes" : "No"}</td>
+        `;
+        tableBody.appendChild(row);
+    });
 }
 
 function saveUserForm(event) {
@@ -51,14 +37,22 @@ function saveUserForm(event) {
     let dob = document.getElementById("dob").value;
     let acceptTerms = document.getElementById("acceptTerms").checked;
 
-    const dobDate = new Date(dob);
-    const today = new Date();
-    const age = today.getFullYear() - dobDate.getFullYear();
-    const monthDiff = today.getMonth() - dobDate.getMonth();
-    const dayDiff = today.getDate() - dobDate.getDate();
-    const exactAge = (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) ? age - 1 : age;
+    // Optional: Add email format validation
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
 
-    if (exactAge < 18 || exactAge > 55) {
+    // Improved age validation
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    if (age < 18 || age > 55) {
         alert("Age must be between 18 and 55 years.");
         return;
     }
@@ -76,11 +70,8 @@ function saveUserForm(event) {
     localStorage.setItem("userEntries", JSON.stringify(entries));
     displayEntries();
 
-    // Optional: Reset form after submission
     userForm.reset();
 }
 
 userForm.addEventListener("submit", saveUserForm);
-
-// Display on initial load
 displayEntries();
