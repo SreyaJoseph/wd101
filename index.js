@@ -10,20 +10,44 @@ function saveEntries(entries) {
 
 function displayEntries() {
   const entries = retrieveEntries();
-  const tableBody = document.getElementById("table-body");
-  tableBody.innerHTML = "";
+  const userEntriesDiv = document.getElementById("user-entries");
 
-  entries.forEach((entry) => {
+  if (entries.length === 0) {
+    userEntriesDiv.innerHTML = `<p class="text-center text-gray-500">No entries yet.</p>`;
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.className = "table-auto w-full border border-gray-300 mt-4";
+
+  const thead = document.createElement("thead");
+  thead.innerHTML = `
+    <tr class="bg-gray-200">
+      <th class="px-4 py-2">Name</th>
+      <th class="px-4 py-2">Email</th>
+      <th class="px-4 py-2">Password</th>
+      <th class="px-4 py-2">DOB</th>
+      <th class="px-4 py-2">Accepted Terms?</th>
+    </tr>
+  `;
+
+  const tbody = document.createElement("tbody");
+  entries.forEach(entry => {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td class='px-4 py-2'>${entry.name}</td>
-      <td class='px-4 py-2'>${entry.email}</td>
-      <td class='px-4 py-2'>${entry.password}</td>
-      <td class='px-4 py-2'>${entry.dob}</td>
-      <td class='px-4 py-2'>${entry.accepted ? "Yes" : "No"}</td>
+      <td class="px-4 py-2">${entry.name}</td>
+      <td class="px-4 py-2">${entry.email}</td>
+      <td class="px-4 py-2">${entry.password}</td>
+      <td class="px-4 py-2">${entry.dob}</td>
+      <td class="px-4 py-2">${entry.accepted ? "Yes" : "No"}</td>
     `;
-    tableBody.appendChild(row);
+    tbody.appendChild(row);
   });
+
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  userEntriesDiv.innerHTML = "";
+  userEntriesDiv.appendChild(table);
 }
 
 function isValidEmail(email) {
