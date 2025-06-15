@@ -20,7 +20,7 @@ function displayEntries() {
       <td class='px-4 py-2'>${entry.email}</td>
       <td class='px-4 py-2'>${entry.password}</td>
       <td class='px-4 py-2'>${entry.dob}</td>
-      <td class='px-4 py-2'>${entry.acceptTerms ? "Yes" : "No"}</td>
+      <td class='px-4 py-2'>${entry.accepted ? "Yes" : "No"}</td>
     `;
     tableBody.appendChild(row);
   });
@@ -48,7 +48,7 @@ function saveUserForm(event) {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
   const dob = document.getElementById("dob").value;
-  const acceptTerms = document.getElementById("acceptTerms").checked;
+  const accepted = document.getElementById("acceptTerms").checked;
 
   if (!isValidEmail(email)) {
     alert("Please enter a valid email.");
@@ -60,7 +60,7 @@ function saveUserForm(event) {
     return;
   }
 
-  const newEntry = { name, email, password, dob, acceptTerms };
+  const newEntry = { name, email, password, dob, accepted };
   const entries = retrieveEntries();
   entries.push(newEntry);
   saveEntries(entries);
@@ -69,6 +69,4 @@ function saveUserForm(event) {
 }
 
 userForm.addEventListener("submit", saveUserForm);
-
-// Load and show previous entries on page load
 window.addEventListener("DOMContentLoaded", displayEntries);
