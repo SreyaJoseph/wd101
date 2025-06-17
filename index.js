@@ -1,5 +1,3 @@
-index.js 
-
 let userForm = document.getElementById("user-form");
 
 const retrieveEntries = () => {
@@ -21,12 +19,14 @@ const displayEntries = () => {
       const emailCell = `<td class='border px-4 py-2'>${entry.email}</td>`;
       const passwordCell = `<td class='border px-4 py-2'>${entry.password}</td>`;
       const dobCell = `<td class='border px-4 py-2'>${entry.dob}</td>`;
-      const acceptedTermsAndConditionsCell = `<td class='border px-4 py-2'>${entry.acceptedTermsAndConditions}</td>`;
-      return `<tr>${nameCell}${emailCell}${passwordCell}${dobCell}${acceptedTermsAndConditionsCell}</tr>`;
+      const acceptedTermsCell = `<td class='border px-4 py-2'>${
+        entry.acceptedTermsAndConditions ? "Yes" : "No"
+      }</td>`;
+      return `<tr>${nameCell}${emailCell}${passwordCell}${dobCell}${acceptedTermsCell}</tr>`;
     })
     .join("\n");
 
-  const tbody = document.getElementById("user-entries");
+  const tbody = document.getElementById("table-body"); // ✅ Use correct ID
   tbody.innerHTML = tableEntries;
 };
 
@@ -72,4 +72,4 @@ const saveUserForm = (event) => {
 };
 
 userForm.addEventListener("submit", saveUserForm);
-displayEntries();
+window.addEventListener("DOMContentLoaded", displayEntries); // Ensures it loads after refresh
