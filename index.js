@@ -1,7 +1,11 @@
 let userForm = document.getElementById("user-form");
 
 function retrieveEntries() {
-  return JSON.parse(localStorage.getItem("userEntries") || "[]");
+  try {
+    return JSON.parse(localStorage.getItem("userEntries") || "[]");
+  } catch {
+    return [];
+  }
 }
 
 function saveEntries(entries) {
@@ -65,7 +69,8 @@ function saveUserForm(event) {
   entries.push(newEntry);
   saveEntries(entries);
   displayEntries();
-  userForm.reset();
+
+  setTimeout(() => userForm.reset(), 0); // More reliable reset
 }
 
 userForm.addEventListener("submit", saveUserForm);
