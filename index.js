@@ -1,34 +1,32 @@
+function getEntries() {
+  return JSON.parse(localStorage.getItem("entries") || "[]");
+}
 
+function saveEntries(entries) {
+  localStorage.setItem("entries", JSON.stringify(entries));
+}
 
-let userForm = document.getElementById("user-form");
+function renderEntries() {
+  const tableBody = document.querySelector("#entriesTable tbody");
+  tableBody.innerHTML = "";
+  const entries = getEntries();
+  entries.forEach((entry) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${entry.name}</td>
+      <td>${entry.email}</td>
+      <td>${entry.password}</td>
+      <td>${entry.dob}</td>
+      <td>${entry.accepted}</td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
 
-const retrieveEntries = () => {
-  let entries = localStorage.getItem("user-entries");
-  if (entries) {
-    entries = JSON.parse(entries);
-  } else {
-    entries = [];
-  }
-  return entries;
-};
+function isValidEmail(email) {
 
-const displayEntries = () => {
-  const entries = retrieveEntries();
-
-  const tableEntries = entries
-    .map((entry) => {
-      const nameCell = `<td class='border px-4 py-2'>${entry.name}</td>`;
-      const emailCell = `<td class='border px-4 py-2'>${entry.email}</td>`;
-      const passwordCell = `<td class='border px-4 py-2'>${entry.password}</td>`;
-      const dobCell = `<td class='border px-4 py-2'>${entry.dob}</td>`;
-      const acceptedTermsAndConditionsCell = `<td class='border px-4 py-2'>${entry.acceptedTermsAndConditions}</td>`;
-      return `<tr>${nameCell}${emailCell}${passwordCell}${dobCell}${acceptedTermsAndConditionsCell}</tr>`;
-    })
-    .join("\n");
-
-  const tbody = document.getElementById("user-entries");
-  tbody.innerHTML = tableEntries;
-};
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 function isValidAge(dob) {
   const birthDate = new Date(dob);
@@ -41,35 +39,31 @@ function isValidAge(dob) {
   return age >= 18 && age <= 55;
 }
 
-const saveUserForm = (event) => {
-  event.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
+  renderEntries();
+  const form = document.getElementById("registrationForm");
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const dob = document.getElementById("dob").value;
+    const accepted = document.getElementById("acceptTerms").checked;
 
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const dob = document.getElementById("dob").value;
-  const acceptedTermsAndConditions =
-    document.getElementById("acceptTerms").checked;
+    if (!isValidEmail(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (!isValidAge(dob)) {
+      alert("Age must be between 18 and 55 years.");
+      return;
+    }
 
-  if (!isValidAge(dob)) {
-    alert("Age must be between 18 and 55 years.");
-    return;
-  }
-
-  const entry = {
-    name,
-    email,
-    password,
-    dob,
-    acceptedTermsAndConditions,
-  };
-
-  const userEntries = retrieveEntries();
-  userEntries.push(entry);
-  localStorage.setItem("user-entries", JSON.stringify(userEntries));
-  displayEntries();
-  userForm.reset();
-};
-
-userForm.addEventListener("submit", saveUserForm);
-displayEntries();
+    const entry = { name, email, password, dob, accepted };
+    const entries = getEntries();
+    entries.push(entry);
+    saveEntries(entries);
+    renderEntries();
+    form.reset();
+  });
+});
